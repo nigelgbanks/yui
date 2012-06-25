@@ -24,8 +24,7 @@ function yui_get_path() {
       $path = FALSE;
     }
   }
-  // Manually check sites/all/libraries in case Libraries API is not available.
-  elseif (file_exists('./sites/all/libraries/yui')) {
+  else if (file_exists('./sites/all/libraries/yui')) {   // Manually check sites/all/libraries in case Libraries API is not available.
     $path = 'sites/all/libraries/yui';
   }
   return $path;
@@ -43,7 +42,7 @@ function yui_get_version() {
     return $version;
   }
   $version = FALSE;
-  $filename = yui_get_path() . 'build/yui/yui.js';
+  $filename = yui_get_path() . '/build/yui/yui.js';
   if(file_exists($filename)) {
     $text = file_get_contents($filename);
     $matches = array();
@@ -63,8 +62,8 @@ function yui_get_version() {
  */
 function yui_get_file_suffix() {
   $suffix = array(
-    YUI_RAW_COMPRESSION => '.js'
-    YUI_MIN_COMPRESSION => '-min.js'
+    YUI_RAW_COMPRESSION => '.js',
+    YUI_MIN_COMPRESSION => '-min.js',
     YUI_DEBUG_COMPRESSION => '-debug.js'
   );
   $compression_type = variable_get('yui_compression_type', YUI_MIN_COMPRESSION);
@@ -78,7 +77,7 @@ function yui_get_file_suffix() {
  *  The path to the given YUI file if found, FALSE otherwise.
  */
 function yui_get_file_path($file) {
-  $filename = yui_get_path() . "/build/$file/$file" . yui_get_suffix();
+  $filename = yui_get_path() . "/build/$file/$file" . yui_get_file_suffix();
   return file_exists($filename) ? $filename : FALSE;
 }
 
