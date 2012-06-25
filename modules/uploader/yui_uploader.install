@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * @file
+ *
+ * The install hooks for this module.
+ */
+
+/**
+ * Implementation of hook_requirements().
+ */
+function yui_uploader_requirements($phase) {
+  $t = get_t();
+  $requirements = array(
+    'yui' => array('title' => $t('Yahoo YUI Library'))
+  );
+  $version = yui_get_version();
+  if (version_compare($version, '3.5.0') >= 0) {
+    $requirements['yui_uploader']['severity'] = REQUIREMENT_OK;
+    $requirements['yui']['value'] = $version;
+  }
+  else {
+    $requirements['yui']['severity'] = REQUIREMENT_ERROR;
+    $requirements['yui']['value'] = $version;
+    $requirements['yui']['description'] = $t('The <a href="@yui">Yahoo YUI Uploader</a> plugin requires YUI library version 3.5.0 or higher. <a href="@download">Download</a> and extract it into the <code>@directory</code> directory. Rename the extracted folder to <code>@library-folder</code>.', array(
+      '@yui' => 'http://yuilibrary.com/',
+      '@download' => 'http://yui.zenfs.com/releases/yui3/yui_3.5.1.zip',
+      '@directory' => 'sites/all/libraries',
+      '@library-folder' => 'yui')
+    );
+  }
+  return $requirements;
+}

@@ -1,0 +1,75 @@
+<?php
+
+/**
+ * @file
+ *
+ * A Drupal wrapper for the Yahoo YUI Uploader Widget
+ */
+define('THEME_YUI_UPLOADER', 'yui_uploader');
+
+/**
+ * Implements hook_elements().
+ */
+function yui_uploader_elements() {
+  return array(
+    'yui_uploader' => array(
+      '#input' => TRUE,
+      '#process' => array('yui_uploader_process'),
+      '#pre_render' => array('yui_uploader_pre_render')
+    )
+  );
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function yui_uploader_theme() {
+  return array(
+    THEME_YUI_UPLOADER => array(
+      'arguments' => array('element' => NULL)
+    )
+  );
+}
+
+/**
+ * Implementation of theme_hook().
+ */
+function theme_yui_uploader(array $element) {
+  _form_set_class($element, array(
+    'yui-uploader'
+  ));
+  $id = $element['#id'];
+  $attributes = drupal_attributes($element['#attributes']);
+  return theme('form_element', $element, "<div id='$id' {$attributes}></div>");
+}
+
+/**
+ * Implements hook_process().
+ */
+function yui_uploader_process(array $element, $edit, array &$form_state, array $complete_form = NULL) {
+  if(empty($element['#extensions'])) {
+    $element['#extensions'] = array('txt', 'jpg', 'xml', 'doc', 'pdf');
+  }
+  return $element;
+}
+
+/**
+ * Implements hook_pre_render().
+ */
+function yui_uploader_pre_render(array $element) {
+  $add_prefix = create_function('$a', 'return "*.$a";');
+  $extensions = array_map($add_prefix, $element['#extensions']);
+  $extensions = implode(';', $extensions);
+  $data = array(
+    'yui' = array(
+      'id' => $elememt['#id'],
+      'extensions' => array(
+        'description' => 'files',
+        'extensions' => $extensions
+      )
+    )
+  );
+  drupal_add_js($data, 'settings');
+  yui_add_seed();
+  drupal_add_js(drupal_get_path('module', 'yui_uploader') . '/js/uploader.js');
+}

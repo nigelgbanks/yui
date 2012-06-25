@@ -1,0 +1,5 @@
+name = YUI Uploader
+description = Adds a Drupal form element wrapper for the YUI uploader.
+dependencies[] = yui
+package = User interface
+core = 6.x
