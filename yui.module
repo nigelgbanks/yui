@@ -1,0 +1,53 @@
+<?php
+
+/**
+ * @file
+ *
+ * A Drupal wrapper for the Yahoo YUI Javascript Library
+ */
+define('YUI_RAW_COMPRESSION', 'raw');
+define('YUI_MIN_COMPRESSION', 'min');
+define('YUI_DEBUG_COMPRESSION', 'debug');
+
+/**
+ * Implements hook_menu().
+ */
+function yui_menu() {
+  return  array(
+    'admin/settings/yui' => array(
+      'title' => t('Yahoo YUI Settings'),
+      'description' => t('Yahoo YUI Settings.'),
+      'file' => 'yui.admin.inc',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('yui_admin_settings_form', 3),
+      'access arguments' => array('administer site configuration'),
+      'type' => MENU_CALLBACK,
+    )
+  );
+}
+
+/**
+ * Adds a single javascript file that will take advantage of YUI ability to asynchronously load the javascript files it requires. Typically this is all that you require.
+ *
+ * This shouldn't be used in conjunction with yui_add().
+ */
+function yui_add_seed() {
+  module_load_include('inc', 'yui', 'yui.utils');
+  $files = array(
+    YUI_RAW_COMPRESSION => 'yui.js'
+    YUI_MIN_COMPRESSION => 'yui-min.js'
+    YUI_DEBUG_COMPRESSION => 'yui-debug.js'
+  );
+  $path = yui_get_path() . '/build/yui/';
+  $compression_type = variable_get('yui_compression_type', YUI_MIN_COMPRESSION);
+  drupal_add_js($path . $files[$compression_type]);
+}
+
+/**
+ * Adds the given yui modules.
+ */
+function yui_add($files = array()) {
+  /**
+   * @TODO Implement.
+   */
+}

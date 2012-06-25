@@ -1,0 +1,41 @@
+<?php
+
+/**
+ * @file
+ *
+ * The install hooks for this module.
+ */
+
+/**
+ * Implementation of hook_requirements().
+ */
+function yui_requirements($phase) {
+  include_once dirname(__FILE__) . '/yui.utils.inc'; // module_load_include() isn't avaliable during the 'install' $phase
+  $t = get_t();
+  $requirements = array(
+    'yui' => array('title' => $t('Yahoo YUI Library'))
+  );
+  if ($version = yui_get_version()) {
+    $requirements['yui']['severity'] = REQUIREMENT_OK;
+    $requirements['yui']['value'] = $version;
+  }
+  else {
+    $requirements['yui']['severity'] = REQUIREMENT_ERROR;
+    $requirements['yui']['value'] = $t('Not found');
+    $requirements['yui']['description'] = $t('The <a href="@yui">Yahoo YUI Library</a> plugin is missing. <a href="@download">Download</a> and extract it into the <code>@directory</code> directory. Rename the extracted folder to <code>@library-folder</code>.', array(
+      '@yui' => 'http://yuilibrary.com/',
+      '@download' => 'http://yui.zenfs.com/releases/yui3/yui_3.5.1.zip',
+      '@directory' => 'sites/all/libraries',
+      '@library-folder' => 'yui')
+    );
+  }
+  return $requirements;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function yui_install() {
+  // Set the module's weight high so that it runs after other modules.
+  db_query("UPDATE {system} SET weight = 99 WHERE name = 'yui' and type = 'module'");
+}
