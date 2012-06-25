@@ -54,3 +54,42 @@ function yui_get_version() {
   }
   return $version;
 }
+
+/**
+ * Gets the suffix for the file depending on the compression settings.
+ *
+ * @return string
+ *   The suffix of the file, denoting its compression type.
+ */
+function yui_get_file_suffix() {
+  $suffix = array(
+    YUI_RAW_COMPRESSION => '.js'
+    YUI_MIN_COMPRESSION => '-min.js'
+    YUI_DEBUG_COMPRESSION => '-debug.js'
+  );
+  $compression_type = variable_get('yui_compression_type', YUI_MIN_COMPRESSION);
+  return $suffix[$compression_type];
+}
+
+/**
+ * Gets the path to the given YUI file.
+ *
+ * @return string
+ *  The path to the given YUI file if found, FALSE otherwise.
+ */
+function yui_get_file_path($file) {
+  $filename = yui_get_path() . "/build/$file/$file" . yui_get_suffix();
+  return file_exists($filename) ? $filename : FALSE;
+}
+
+/**
+ * Adds the given YUI file.
+ *
+ * @param string $file
+ *   The YUI widget or component to load.
+ */
+function yui_add_file($file) {
+  if($filename = yui_get_file_path($file)) {
+    drupal_add_js($filename);
+  }
+}

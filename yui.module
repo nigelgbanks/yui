@@ -33,21 +33,19 @@ function yui_menu() {
  */
 function yui_add_seed() {
   module_load_include('inc', 'yui', 'yui.utils');
-  $files = array(
-    YUI_RAW_COMPRESSION => 'yui.js'
-    YUI_MIN_COMPRESSION => 'yui-min.js'
-    YUI_DEBUG_COMPRESSION => 'yui-debug.js'
-  );
-  $path = yui_get_path() . '/build/yui/';
-  $compression_type = variable_get('yui_compression_type', YUI_MIN_COMPRESSION);
-  drupal_add_js($path . $files[$compression_type]);
+  yui_add_file('yui');
 }
 
 /**
  * Adds the given yui modules.
+ *
+ * @param array $files
+ *   The YUI file/components to include.
  */
 function yui_add($files = array()) {
-  /**
-   * @TODO Implement.
-   */
+  module_load_include('inc', 'yui', 'yui.utils');
+  $files = is_array($files) ? $files : array($files);
+  foreach($files as $file) {
+    yui_add_file($file);
+  }
 }
