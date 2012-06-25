@@ -61,7 +61,7 @@ function yui_uploader_pre_render(array $element) {
   $extensions = array_map($add_prefix, $element['#extensions']);
   $extensions = implode(';', $extensions);
   $data = array(
-    'yui' = array(
+    'yui' => array(
       'id' => $elememt['#id'],
       'extensions' => array(
         'description' => 'files',
