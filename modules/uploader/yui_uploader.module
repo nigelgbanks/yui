@@ -14,7 +14,7 @@ function yui_uploader_menu() {
   return  array(
     'yui/uploader/%' => array(
       'file' => 'yui.upload.inc',
-      'page callback' => 'yui_upload_file',
+      'page callback' => 'yui_uploader_upload_file',
       'page arguments' => array(2),
       'access arguments' => array('access content'),
       'type' => MENU_CALLBACK,
