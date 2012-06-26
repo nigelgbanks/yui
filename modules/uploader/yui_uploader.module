@@ -15,10 +15,10 @@ function yui_uploader_elements() {
     'yui_uploader' => array(
       '#input' => TRUE,
       '#pre_render' => array('yui_uploader_pre_render'),
-      '#width' => '300px',
+      '#width' => '100px',
       '#height' => '40px',
       '#extensions' => array('txt', 'jpg', 'xml', 'doc', 'pdf'),
-      '#multiple_files' => TRUE
+      '#multiple_files' => TRUE,
     )
   );
 }
@@ -43,13 +43,23 @@ function theme_yui_uploader(array $element) {
   ));
   $id = $element['#id'];
   $attributes = drupal_attributes($element['#attributes']);
-  return theme('form_element', $element, "<div id='$id' {$attributes}></div>");
+  $markup = <<<EOT
+<div id='$id' {$attributes}></div>
+<br/>
+<div id='yui-uploader-files'>
+  <table id='yui-uploader-filenames' style='border-width:1px; border-style:solid; padding:5px;'>
+    <thead><tr><th>Filename</th><th>File size</th><th>Percent uploaded</th></tr></thead><tbody></tbody>
+  </table>
+</div>
+EOT;
+  return theme('form_element', $element, $markup);
 }
 
 /**
  * Implements hook_pre_render().
  */
 function yui_uploader_pre_render(array $element) {
+  module_load_include('inc', 'yui', 'yui.utils');
   $add_prefix = create_function('$a', 'return "*.$a";');
   $extensions = array_map($add_prefix, $element['#extensions']);
   $extensions = implode(';', $extensions);
@@ -59,16 +69,19 @@ function yui_uploader_pre_render(array $element) {
       'uploader' => array(
         'select' => '#' .$element['#id'], // Only one supported now.
         'config' => array(
+          'selectButtonLabel' => t('Upload Files'),
           'width' => $element['#width'],
           'height' => $element['#height'],
           'fileFilters' => array(array('description' => 'Files', 'extensions' => $extensions)),
-          'multipleFiles' => $element['#multiple_files']
+          'multipleFiles' => $element['#multiple_files'],
+          'swfURL' =>  yui_get_assets_file_path('uploader') . '/flashuploader.swf?t=' . rand(),
         )
       )
     )
   );
   yui_add_seed();
   drupal_add_js($data, 'setting');
-  drupal_add_js(drupal_get_path('module', 'yui_uploader') . '/js/uploader.js');
+  drupal_add_js(drupal_get_path('module', 'yui_uploader') . '/js/yui-drupal-uploader.js');
+  drupal_add_css(drupal_get_path('module', 'yui_uploader') . '/css/yui-uploader-progress-bar.css');
   return $element;
 }

@@ -71,13 +71,24 @@ function yui_get_file_suffix() {
 }
 
 /**
- * Gets the path to the given YUI file.
+ * Gets the path to the given YUI javascript file.
  *
  * @return string
- *  The path to the given YUI file if found, FALSE otherwise.
+ *  The path to the given YUI javascript file if found, FALSE otherwise.
  */
-function yui_get_file_path($file) {
+function yui_get_js_file_path($file) {
   $filename = yui_get_path() . "/build/$file/$file" . yui_get_file_suffix();
+  return file_exists($filename) ? $filename : FALSE;
+}
+
+/**
+ * Gets the path to the given YUI widgets assets folder.
+ *
+ * @return string
+ *  The path to the given YUI widgets assets folder if found, FALSE otherwise.
+ */
+function yui_get_assets_file_path($file) {
+  $filename = yui_get_path() . "/build/$file/assets";
   return file_exists($filename) ? $filename : FALSE;
 }
 
@@ -89,7 +100,7 @@ function yui_get_file_path($file) {
  */
 function yui_add_file($file) {
   static $exported_globals;
-  if($filename = yui_get_file_path($file)) {
+  if($filename = yui_get_js_file_path($file)) {
     drupal_add_js($filename);
   }
   if(!isset($exported_globals)) {
