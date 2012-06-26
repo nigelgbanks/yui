@@ -33,7 +33,7 @@ function yui_uploader_elements() {
       '#process' => array('yui_uploader_process'),
       '#width' => '100px',
       '#height' => '40px',
-      '#extensions' => array('txt', 'jpg', 'xml', 'doc', 'pdf'),
+      '#extensions' => array('*'),
       '#multiple_files' => TRUE,
       '#required' => FALSE
     )
@@ -62,6 +62,7 @@ function theme_yui_uploader(array $element) {
   $attributes = drupal_attributes($element['#attributes']);
   $markup = <<<EOT
 <div id='$id' {$attributes}></div>
+<div id="yui-uploader-overall-progress"></div>
 <br/>
 <div id='yui-uploader-files' style='display:none'>
   <table id='yui-uploader-filenames' style='border-width:1px; border-style:solid; padding:5px;'>

@@ -25,3 +25,6 @@
 	line-height: 29px;
 	width: 0;
 }
+#yui-uploader-overall-progress {
+    float: right;
+}

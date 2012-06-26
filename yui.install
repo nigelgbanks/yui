@@ -45,7 +45,7 @@ function yui_install() {
 /**
  * Implementation of hook_uninstall().
  */
-function yui_uploader_uninstall() {
+function yui_uninstall() {
   $path = file_directory_path() . '/yui';
   if (file_check_directory($path)) {
     $files = file_scan_directory($path, '.*');

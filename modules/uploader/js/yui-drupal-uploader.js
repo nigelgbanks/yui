@@ -19,7 +19,7 @@ Drupal.behaviors.yuiUploader = function() {
         });
         if (file_list.length > 0) {
           Y.one("#yui-uploader-files").setStyle('display', 'block');
-          uploader.uploadAll();
+          uploader.uploadThese(file_list);
         }
       });
       uploader.on("uploadprogress", function (event) {
@@ -28,21 +28,17 @@ Drupal.behaviors.yuiUploader = function() {
       });
       uploader.on("uploadstart", function (event) {
         uploader.set("enabled", false);
-        //Y.one(upload_button_selector).addClass("yui3-button-disabled");
-        //Y.one(upload_button_selector).detach("click");
       });
       uploader.on("uploadcomplete", function (event) {
         var file_row = Y.one("#" + event.file.get("id") + "_row");
         file_row.one(".percentdone").set("text", "Finished!");
       });
-      //uploader.on("totaluploadprogress", function (event) {
-       // Y.one("#overallProgress").setHTML("Total uploaded: <strong>" + event.percentLoaded + "%" + "</strong>");
-      //});
+      uploader.on("totaluploadprogress", function (event) {
+        Y.one("#yui-uploader-overall-progress").setHTML("Total uploaded: <strong>" + event.percentLoaded + "%" + "</strong>");
+      });
       uploader.on("alluploadscomplete", function (event) {
         uploader.set("enabled", true);
-        //uploader.set("fileList", []);
-        //Y.one("#overallProgress").set("text", "Uploads complete!");
-        //uploadDone = true;
+        Y.one("#yui-uploader-overall-progress").set("text", "Uploads complete!");
       });
     });
   }
