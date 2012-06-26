@@ -1,8 +1,10 @@
-YUI().use('uploader', 'uploader-flash',  function (Y) {
-  Y.Uploader = Y.UploaderFlash;
-  var prop = Drupal.settigns.yui.uploader;
-  var uploader = new Y.Uploader({width: prop.width,
-                                 height: prop.height});
-  uploader.set("fileFilters", prop.fileFilters);
-  uploader.render(prop.id);
-});
+Drupal.behaviors.yuiUploader = function() {
+  if (typeof arguments.callee.called == 'undefined') {
+    arguments.callee.called = true;
+    YUI().use('uploader', 'uploader-flash',  function (Y) {
+      var prop = Drupal.settings.yui.uploader;
+      var uploader = new Y.UploaderFlash(Drupal.settings.yui.uploader.config);
+      uploader.render(Drupal.settings.yui.uploader.select);
+    });
+  }
+}
