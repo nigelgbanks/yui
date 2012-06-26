@@ -38,4 +38,20 @@ function yui_requirements($phase) {
 function yui_install() {
   // Set the module's weight high so that it runs after other modules.
   db_query("UPDATE {system} SET weight = 99 WHERE name = 'yui' and type = 'module'");
+  $path = file_directory_path() . '/yui';
+  file_check_directory($path, FILE_CREATE_DIRECTORY);
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function yui_uploader_uninstall() {
+  $path = file_directory_path() . '/yui';
+  if (file_check_directory($path)) {
+    $files = file_scan_directory($path, '.*');
+    foreach ($files as $file) {
+      unlink($file->filename);
+    }
+    rmdir($path);
+  }
 }

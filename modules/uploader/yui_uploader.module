@@ -8,6 +8,21 @@
 define('THEME_YUI_UPLOADER', 'yui_uploader');
 
 /**
+ * Implements hook_menu().
+ */
+function yui_uploader_menu() {
+  return  array(
+    'yui/uploader/%' => array(
+      'file' => 'yui.upload.inc',
+      'page callback' => 'yui_upload_file',
+      'page arguments' => array(2),
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+    )
+  );
+}
+
+/**
  * Implements hook_elements().
  */
 function yui_uploader_elements() {
@@ -15,10 +30,12 @@ function yui_uploader_elements() {
     'yui_uploader' => array(
       '#input' => TRUE,
       '#pre_render' => array('yui_uploader_pre_render'),
+      '#process' => array('yui_uploader_process'),
       '#width' => '100px',
       '#height' => '40px',
       '#extensions' => array('txt', 'jpg', 'xml', 'doc', 'pdf'),
       '#multiple_files' => TRUE,
+      '#required' => FALSE
     )
   );
 }
@@ -46,13 +63,21 @@ function theme_yui_uploader(array $element) {
   $markup = <<<EOT
 <div id='$id' {$attributes}></div>
 <br/>
-<div id='yui-uploader-files'>
+<div id='yui-uploader-files' style='display:none'>
   <table id='yui-uploader-filenames' style='border-width:1px; border-style:solid; padding:5px;'>
     <thead><tr><th>Filename</th><th>File size</th><th>Percent uploaded</th></tr></thead><tbody></tbody>
   </table>
 </div>
 EOT;
   return theme('form_element', $element, $markup);
+}
+
+/**
+ * Implements hook_process().
+ */
+function yui_uploader_process(array $element, $edit, array &$form_state, array $complete_form = NULL) {
+  $element['#form_build_id'] = $complete_form['#build_id'];
+  return $element;
 }
 
 /**
@@ -68,13 +93,15 @@ function yui_uploader_pre_render(array $element) {
     'yui' => array(
       'uploader' => array(
         'select' => '#' .$element['#id'], // Only one supported now.
+        'required' => $element['#required'], // Prevent form submission until one or more files have been uploaded.
         'config' => array(
           'selectButtonLabel' => t('Upload Files'),
           'width' => $element['#width'],
           'height' => $element['#height'],
           'fileFilters' => array(array('description' => 'Files', 'extensions' => $extensions)),
           'multipleFiles' => $element['#multiple_files'],
-          'swfURL' =>  yui_get_assets_file_path('uploader') . '/flashuploader.swf?t=' . rand(),
+          'swfURL' =>  url(yui_get_assets_file_path('uploader') . '/flashuploader.swf', array('query' => array('t' => rand()))),
+          'uploadURL' => url('yui/uploader/' . $element['#form_build_id'])
         )
       )
     )

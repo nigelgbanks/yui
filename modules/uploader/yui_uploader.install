@@ -32,3 +32,25 @@ function yui_uploader_requirements($phase) {
   }
   return $requirements;
 }
+
+/**
+ * Implementation of hook_install().
+ */
+function yui_uploader_install() {
+  $path = file_directory_path() . '/yui/uploader';
+  file_check_directory($path, FILE_CREATE_DIRECTORY);
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function yui_uploader_uninstall() {
+  $path = file_directory_path() . '/yui/uploader';
+  if (file_check_directory($path)) {
+    $files = file_scan_directory($path, '.*');
+    foreach ($files as $file) {
+      unlink($file->filename);
+    }
+    rmdir($path);
+  }
+}
