@@ -6,13 +6,14 @@
  * A Drupal wrapper for the Yahoo YUI Uploader Widget
  */
 define('THEME_YUI_UPLOADER', 'yui_uploader');
+define('MENU_YUI_UPLOADER', 'yui/uploader');
 
 /**
  * Implements hook_menu().
  */
 function yui_uploader_menu() {
   return  array(
-    'yui/uploader/%' => array(
+    MENU_YUI_UPLOADER => array(
       'file' => 'yui.upload.inc',
       'page callback' => 'yui_uploader_upload_file',
       'page arguments' => array(2),
@@ -77,7 +78,10 @@ EOT;
  * Implements hook_process().
  */
 function yui_uploader_process(array $element, $edit, array &$form_state, array $complete_form = NULL) {
+  $element['#form_id'] = $complete_form['#id'];
   $element['#form_build_id'] = $complete_form['#build_id'];
+  $element['#upload_required'] = $element['#required'];
+  $element['#required'] = FALSE;
   return $element;
 }
 
@@ -85,6 +89,7 @@ function yui_uploader_process(array $element, $edit, array &$form_state, array $
  * Implements hook_pre_render().
  */
 function yui_uploader_pre_render(array $element) {
+  global $base_url;
   module_load_include('inc', 'yui', 'yui.utils');
   $add_prefix = create_function('$a', 'return "*.$a";');
   $extensions = array_map($add_prefix, $element['#extensions']);
@@ -94,15 +99,16 @@ function yui_uploader_pre_render(array $element) {
     'yui' => array(
       'uploader' => array(
         'select' => '#' .$element['#id'], // Only one supported now.
-        'required' => $element['#required'], // Prevent form submission until one or more files have been uploaded.
+        'required' => $element['#upload_required'], // Prevent form submission until one or more files have been uploaded.
         'config' => array(
           'selectButtonLabel' => t('Upload Files'),
           'width' => $element['#width'],
           'height' => $element['#height'],
           'fileFilters' => array(array('description' => 'Files', 'extensions' => $extensions)),
           'multipleFiles' => $element['#multiple_files'],
-          'swfURL' =>  url(yui_get_assets_file_path('uploader') . '/flashuploader.swf', array('query' => array('t' => rand()))),
-          'uploadURL' => url('yui/uploader/' . $element['#form_build_id'])
+          'swfURL' =>  $base_url . '/' . yui_get_assets_file_path('uploader') . '/flashuploader.swf?t=' .rand(),
+          'uploadURL' => url(MENU_YUI_UPLOADER),
+          'postVarsPerFile' => array('form_build_id' => $element['#form_build_id'], 'form_id' => $element['#form_id'])
         )
       )
     )
