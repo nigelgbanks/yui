@@ -83,6 +83,7 @@ function yui_uploader_process(array $element, $edit, array &$form_state, array $
   $element['#upload_required'] = $element['#required'];
   $element['#required'] = FALSE;
   $element['#cache'] = TRUE;
+  $element['#files'] = yui_uploader_get_uploaded_files($form_state);
   $form_state['storage']['yui_uploader'] = isset($form_state['storage']['yui_uploader']) ? $form_state['storage']['yui_uploader'] : array();
   return $element;
 }
@@ -96,12 +97,13 @@ function yui_uploader_pre_render(array $element) {
   $add_prefix = create_function('$a', 'return "*.$a";');
   $extensions = array_map($add_prefix, $element['#extensions']);
   $extensions = implode(';', $extensions);
-  $element['#width'];
   $data = array(
     'yui' => array(
       'uploader' => array(
         'select' => '#' .$element['#id'], // Only one supported now.
+        'formID' => str_replace(array('][', '_', ' '), '-', $element['#form_id']),
         'required' => $element['#upload_required'], // Prevent form submission until one or more files have been uploaded.
+        'files' => $element['#files'],
         'config' => array(
           'selectButtonLabel' => t('Upload Files'),
           'width' => $element['#width'],
@@ -110,7 +112,12 @@ function yui_uploader_pre_render(array $element) {
           'multipleFiles' => $element['#multiple_files'],
           'swfURL' =>  $base_url . '/' . yui_get_assets_file_path('uploader') . '/flashuploader.swf?t=' .rand(),
           'uploadURL' => url(MENU_YUI_UPLOADER),
-          'postVarsPerFile' => array('form_build_id' => $element['#form_build_id'], 'form_id' => $element['#form_id'], 'form_token' => $element['#form_token'], 'SID' => session_id())
+          'postVarsPerFile' => array(
+            'SID' => session_id(),
+            'form_build_id' => $element['#form_build_id'],
+            'form_id' => $element['#form_id'],
+            'form_token' => $element['#form_token']
+          )
         )
       )
     )
@@ -120,4 +127,14 @@ function yui_uploader_pre_render(array $element) {
   drupal_add_js(drupal_get_path('module', 'yui_uploader') . '/js/yui-drupal-uploader.js');
   drupal_add_css(drupal_get_path('module', 'yui_uploader') . '/css/yui-uploader-progress-bar.css');
   return $element;
+}
+
+/**
+ * Returns an array of the uploaded files as Drupal file objects.
+ */
+function yui_uploader_get_uploaded_files(array &$form_state) {
+  if(isset($form_state['storage']['yui_uploader'])) {
+    return $form_state['storage']['yui_uploader'];
+  }
+  return array();
 }

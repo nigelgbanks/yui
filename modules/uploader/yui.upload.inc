@@ -60,16 +60,6 @@ function yui_uploader_store_uploaded_file($form_build_id, stdClass $file) {
 }
 
 /**
- * Returns an array of the uploaded files as Drupal file objects.
- */
-function yui_uploader_get_uploaded_files(array &$form_state) {
-  if(isset($form_state['storage']['yui_uploader'])) {
-    return $form_state['storage']['yui_uploader'];
-  }
-  return array();
-}
-
-/**
  * Because of limitiations on flash we have to restore the session from a POS
  */
 function yui_uploader_restore_session() {
