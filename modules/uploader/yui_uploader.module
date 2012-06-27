@@ -36,7 +36,6 @@ function yui_uploader_elements() {
       '#height' => '40px',
       '#extensions' => array('*'),
       '#multiple_files' => TRUE,
-      '#required' => FALSE
     )
   );
 }
@@ -78,10 +77,13 @@ EOT;
  * Implements hook_process().
  */
 function yui_uploader_process(array $element, $edit, array &$form_state, array $complete_form = NULL) {
-  $element['#form_id'] = $complete_form['#id'];
-  $element['#form_build_id'] = $complete_form['#build_id'];
+  $element['#form_id'] = $complete_form['form_id']['#value'];
+  $element['#form_build_id'] = $complete_form['form_build_id']['#value'];
+  $element['#form_token'] = $complete_form['form_token']['#default_value'];
   $element['#upload_required'] = $element['#required'];
   $element['#required'] = FALSE;
+  $element['#cache'] = TRUE;
+  $form_state['storage']['yui_uploader'] = isset($form_state['storage']['yui_uploader']) ? $form_state['storage']['yui_uploader'] : array();
   return $element;
 }
 
@@ -108,7 +110,7 @@ function yui_uploader_pre_render(array $element) {
           'multipleFiles' => $element['#multiple_files'],
           'swfURL' =>  $base_url . '/' . yui_get_assets_file_path('uploader') . '/flashuploader.swf?t=' .rand(),
           'uploadURL' => url(MENU_YUI_UPLOADER),
-          'postVarsPerFile' => array('form_build_id' => $element['#form_build_id'], 'form_id' => $element['#form_id'])
+          'postVarsPerFile' => array('form_build_id' => $element['#form_build_id'], 'form_id' => $element['#form_id'], 'form_token' => $element['#form_token'])
         )
       )
     )

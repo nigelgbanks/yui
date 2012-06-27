@@ -10,13 +10,13 @@
  * Handles the uploading of files.
  */
 function yui_uploader_upload_file() {
+  yui_uploader_restore_session();
   $form_build_id = $_POST['form_build_id'];
-  $form_id = $_POST['form_id'];
   foreach ($_FILES as $data) {
     if($data['error'] == 0) {
       $file = yui_uploader_save_uploaded_file($form_build_id, $data);
       if($file !== FALSE) {
-        yui_uploader_store_uploaded_file($form_build_id, $form_id, $file);
+        yui_uploader_store_uploaded_file($form_build_id, $file);
       }
     } // @TODO log/display error to the user.
   }
@@ -50,15 +50,11 @@ function yui_uploader_save_uploaded_file($form_build_id, array $data) {
 /**
  * Stores the uploaded file in the form_state.
  */
-function yui_uploader_store_uploaded_file($form_build_id, $form_id, stdClass $file) {
+function yui_uploader_store_uploaded_file($form_build_id, stdClass $file) {
   $form_state = array('storage' => NULL, 'submitted' => FALSE, 'post' => $_POST);
-  if (!$form = form_get_cache($form_build_id, $form_state)) {
-    if(!isset($form_state['storage']['yui_uploader'])) {
-      $form_state['storage']['yui_uploader'] = array();
-    }
+  $form = form_get_cache($form_build_id, $form_state);
+  if (isset($form)) {
     $form_state['storage']['yui_uploader'][] = $file;
-    $count = count($form_state['storage']['yui_uploader']);
-    drupal_prepare_form($form_id, $form, $form_state);
     form_set_cache($form_build_id, $form, $form_state);
   }
 }
@@ -71,4 +67,11 @@ function yui_uploader_get_uploaded_files(array &$form_state) {
     return $form_state['storage']['yui_uploader'];
   }
   return array();
+}
+
+/**
+ * Because of limitiations on flash we have to restore the session from a POS
+ */
+function yui_uploader_restore_session() {
+  session_id($_POST['SID']);
 }
