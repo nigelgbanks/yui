@@ -110,7 +110,7 @@ function yui_uploader_pre_render(array $element) {
           'multipleFiles' => $element['#multiple_files'],
           'swfURL' =>  $base_url . '/' . yui_get_assets_file_path('uploader') . '/flashuploader.swf?t=' .rand(),
           'uploadURL' => url(MENU_YUI_UPLOADER),
-          'postVarsPerFile' => array('form_build_id' => $element['#form_build_id'], 'form_id' => $element['#form_id'], 'form_token' => $element['#form_token'])
+          'postVarsPerFile' => array('form_build_id' => $element['#form_build_id'], 'form_id' => $element['#form_id'], 'form_token' => $element['#form_token'], 'SID' => session_id())
         )
       )
     )

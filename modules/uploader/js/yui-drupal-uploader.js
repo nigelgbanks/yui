@@ -7,16 +7,6 @@ Drupal.behaviors.yuiUploader = function() {
         return;
       }
       var uploader = new Y.UploaderFlash(Drupal.settings.yui.uploader.config);
-      var post_vars = uploader.get('postVarsPerFile');
-      var cookies = document.cookie.split(';');
-      for (i=0; i < cookies.length; i++) {
-        var cookie = cookies[i].split('=');
-        if (cookie[0].indexOf('SESS') == 0) {
-          post_vars.SID = cookie[1];
-          break;
-        }
-      }
-      uploader.get('postVarsPerFile', post_vars);
       uploader.render(Drupal.settings.yui.uploader.select);
       uploader.after("fileselect", function (event) {
         var file_list = event.fileList;
