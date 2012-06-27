@@ -7,17 +7,18 @@ Drupal.behaviors.yuiUploader = function() {
         return;
       }
       var uploader = new Y.UploaderFlash(Drupal.settings.yui.uploader.config);
-      var uploaded = false;
+      var uploaded = false, uploading = false;
       var upload_required = Drupal.settings.yui.uploader.required;
       if(Drupal.settings.yui.uploader.required) { // Upload required.
         $('#' + Drupal.settings.yui.uploader.formID + ' input[type="submit"]').not('.ahah-processed').click(function(e) {
-          if(uploaded == false) {
+          if(uploaded == false || uploading == true) {
             e.preventDefault();
             alert(Drupal.t('You must upload one or files, before you can submit the form.'));
           }
         });
       }
       if(Drupal.settings.yui.uploader.files.length > 0) {
+        uploaded = true;
         Y.one("#yui-uploader-files").setStyle('display', 'block');
         var file_table = Y.one("#yui-uploader-filenames tbody");
         Y.each(Drupal.settings.yui.uploader.files, function (file) {
@@ -39,6 +40,7 @@ Drupal.behaviors.yuiUploader = function() {
         });
         if (file_list.length > 0) {
           Y.one("#yui-uploader-files").setStyle('display', 'block');
+          uploading = true;
           uploader.uploadThese(file_list);
         }
       });
@@ -59,6 +61,7 @@ Drupal.behaviors.yuiUploader = function() {
       uploader.on("alluploadscomplete", function (event) {
         uploader.set("enabled", true);
         uploaded = true;
+        uploading = false;
         Y.one("#yui-uploader-overall-progress").set("text", "Upload complete!");
       });
     });
