@@ -11,6 +11,9 @@
  */
 function yui_uploader_requirements($phase) {
   module_load_include('inc', 'yui', 'yui.utils');
+  if($phase != 'install') {
+    return;
+  }
   $t = get_t();
   $requirements = array(
     'yui' => array('title' => $t('Yahoo YUI Library'))
