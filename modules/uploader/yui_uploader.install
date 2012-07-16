@@ -16,12 +16,12 @@ function yui_uploader_requirements($phase) {
   }
   $t = get_t();
   $requirements = array(
-    'yui' => array('title' => $t('Yahoo YUI Library'))
+    'yui_uploader' => array('title' => $t('Yahoo YUI Library'))
   );
   $version = yui_get_version();
   if (version_compare($version, '3.5.0') >= 0) {
     $requirements['yui_uploader']['severity'] = REQUIREMENT_OK;
-    $requirements['yui']['value'] = $version;
+    $requirements['yui_uploader']['value'] = $version;
   }
   else {
     $requirements['yui']['severity'] = REQUIREMENT_ERROR;
