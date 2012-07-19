@@ -61,13 +61,15 @@ function theme_yui_uploader(array $element) {
   $id = $element['#id'];
   $attributes = drupal_attributes($element['#attributes']);
   $markup = <<<EOT
-<div id='$id' {$attributes}></div>
-<div id="yui-uploader-overall-progress"></div>
-<br/>
-<div id='yui-uploader-files' style='display:none'>
-  <table id='yui-uploader-filenames' style='border-width:1px; border-style:solid; padding:5px;'>
-    <thead><tr><th>Filename</th><th>File size</th><th>Percent uploaded</th></tr></thead><tbody></tbody>
-  </table>
+<div id='$id' {$attributes}>
+  <div class="yui-uploader"></div>
+  <div class="yui-uploader-overall-progress"></div>
+  <br/>
+  <div class='yui-uploader-files' style='display:none'>
+    <table class='yui-uploader-filenames' style='border-width:1px; border-style:solid; padding:5px;'>
+      <thead><tr><th>Filename</th><th>File size</th><th>Percent uploaded</th></tr></thead><tbody></tbody>
+    </table>
+  </div>
 </div>
 EOT;
   return theme('form_element', $element, $markup);
@@ -97,27 +99,29 @@ function yui_uploader_pre_render(array $element) {
   $add_prefix = create_function('$a', 'return "*.$a";');
   $extensions = array_map($add_prefix, $element['#extensions']);
   $extensions = implode(';', $extensions);
+  $id = $element['#id'];
   $data = array(
     'yui' => array(
       'uploader' => array(
-        'select' => '#' .$element['#id'], // Only one supported now.
-        'formID' => str_replace(array('][', '_', ' '), '-', $element['#form_id']),
-        'required' => $element['#upload_required'], // Prevent form submission until one or more files have been uploaded.
-        'files' => $element['#files'],
-        'config' => array(
-          'selectButtonLabel' => t('Upload Files'),
-          'width' => $element['#width'],
-          'height' => $element['#height'],
-          'fileFilters' => array(array('description' => 'Files', 'extensions' => $extensions)),
-          'multipleFiles' => $element['#multiple_files'],
-          'swfURL' =>  $base_url . '/' . yui_get_assets_file_path('uploader') . '/flashuploader.swf?t=' .rand(),
-          'uploadURL' => url(MENU_YUI_UPLOADER),
-          'simLimit' => 1,
-          'postVarsPerFile' => array(
-            'SID' => session_id(),
-            'form_build_id' => $element['#form_build_id'],
-            'form_id' => $element['#form_id'],
-            'form_token' => $element['#form_token']
+        "$id" => array(
+          'formID' => str_replace(array('][', '_', ' '), '-', $element['#form_id']),
+          'required' => $element['#upload_required'], // Prevent form submission until one or more files have been uploaded.
+          'files' => $element['#files'],
+          'config' => array(
+            'selectButtonLabel' => t('Upload Files'),
+            'width' => $element['#width'],
+            'height' => $element['#height'],
+            'fileFilters' => array(array('description' => 'Files', 'extensions' => $extensions)),
+            'multipleFiles' => $element['#multiple_files'],
+            'swfURL' =>  $base_url . '/' . yui_get_assets_file_path('uploader') . '/flashuploader.swf?t=' .rand(),
+            'uploadURL' => url(MENU_YUI_UPLOADER),
+            'simLimit' => 1,
+            'postVarsPerFile' => array(
+              'SID' => session_id(),
+              'form_build_id' => $element['#form_build_id'],
+              'form_id' => $element['#form_id'],
+              'form_token' => $element['#form_token']
+            )
           )
         )
       )
