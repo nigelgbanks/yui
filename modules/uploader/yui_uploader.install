@@ -42,6 +42,7 @@ function yui_uploader_requirements($phase) {
 function yui_uploader_install() {
   $path = file_directory_path() . '/yui/uploader';
   file_check_directory($path, FILE_CREATE_DIRECTORY);
+  db_query("ALTER TABLE {cache_form} ENGINE = InnoDB"); // Table needs to be lockable for yui uploader to work MyISAM is not lockable in later versions of Mysql.
 }
 
 /**
