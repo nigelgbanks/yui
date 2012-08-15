@@ -52,17 +52,18 @@ function yui_uploader_save_uploaded_file($form_build_id, array $data) {
  */
 function yui_uploader_store_uploaded_file($form_build_id, stdClass $file) {
   $form_state = array('storage' => NULL, 'submitted' => FALSE, 'post' => $_POST);
-  db_lock_table('cache_form'); // Lock cache for when uploads are too quick.
-  $form = form_get_cache($form_build_id, $form_state);
-  if (isset($form)) {
-    $form_state['storage']['yui_uploader'][] = $file;
-    form_set_cache($form_build_id, $form, $form_state);
+  if(lock_acquire('yui_upload_file')) {
+    $form = form_get_cache($form_build_id, $form_state);
+    if (isset($form)) {
+      $form_state['storage']['yui_uploader'][] = $file;
+      form_set_cache($form_build_id, $form, $form_state);
+    }
+    lock_release('yui_upload_file');
   }
-  db_unlock_tables(); // Free Locks
 }
 
 /**
- * Because of limitiations on flash we have to restore the session from a POS
+ * Because of limitiations on flash we have to restore the session from a POST
  */
 function yui_uploader_restore_session() {
   session_id($_POST['SID']);
