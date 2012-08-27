@@ -23,17 +23,15 @@ Drupal.yui.uploader = function(selector, settings) {
       $('#' + settings.formID).submit(function(e) { // Prevent form submission untill a file has been uploaded
         if(uploaded == false || uploading == true) {
           e.preventDefault();
-          $(this).data('yui-block-submit', true);
           alert(Drupal.t('You must upload one or files, before you can submit the form.')); // Alerts aren't pretty perhaps we could do something else?
         }
-        $(this).data('yui-block-submit', false);
       });
     }
     var files = Y.one(selector + ' .yui-uploader-files');
     var files_table = Y.one(selector + ' .yui-uploader-files .yui-uploader-filenames tbody');
     var files_progress = Y.one(selector + ' .yui-uploader-overall-progress');
     if(settings.files.length > 0) {
-      uploaded = true;
+      settings.submittable = uploaded = true;
       files.setStyle('display', 'block');
       Y.each(settings.files, function (file) {
         files_table.append('<tr>' +
@@ -54,6 +52,7 @@ Drupal.yui.uploader = function(selector, settings) {
       if (file_list.length > 0) {
         files.setStyle('display', 'block');
         uploading = true;
+        settings.submittable = false;
         uploader.uploadThese(file_list);
       }
     });
@@ -73,7 +72,7 @@ Drupal.yui.uploader = function(selector, settings) {
     });
     uploader.on('alluploadscomplete', function (event) {
       uploader.set('enabled', true);
-      uploaded = true;
+      settings.submittable = uploaded = true;
       uploading = false;
       files_progress.set('text', Drupal.t('Upload complete!'));
     });
