@@ -23,8 +23,10 @@ Drupal.yui.uploader = function(selector, settings) {
       $('#' + settings.formID).submit(function(e) { // Prevent form submission untill a file has been uploaded
         if(uploaded == false || uploading == true) {
           e.preventDefault();
+          $(this).data('yui-block-submit', true);
           alert(Drupal.t('You must upload one or files, before you can submit the form.')); // Alerts aren't pretty perhaps we could do something else?
         }
+        $(this).data('yui-block-submit', false);
       });
     }
     var files = Y.one(selector + ' .yui-uploader-files');
