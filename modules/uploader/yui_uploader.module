@@ -106,7 +106,7 @@ function yui_uploader_pre_render(array $element) {
         "$id" => array(
           'formID' => str_replace(array('][', '_', ' '), '-', $element['#form_id']),
           'required' => $element['#upload_required'], // Prevent form submission until one or more files have been uploaded.
-          'submittable' => $element['#upload_required'] ? TRUE : FALSE;
+          'submittable' => $element['#upload_required'] ? TRUE : FALSE,
           'files' => $element['#files'],
           'config' => array(
             'selectButtonLabel' => t('Upload Files'),
