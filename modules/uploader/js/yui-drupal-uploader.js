@@ -4,14 +4,14 @@ Drupal.behaviors.yuiUploader = function(context) {
     if (!$(id_selector + '.yui-processed').size()) {
       var settings = Drupal.settings.yui.uploader[id];
       $(id_selector).each(function() {
-        new Drupal.yui.uploader(id_selector, settings);
+        var uploader = new Drupal.yui.uploader(id_selector, settings, id);
       });
       $(id_selector).addClass('yui-processed');
     }
   }
 };
 Drupal.yui = Drupal.yui || {}; // If not defined create the yui namespace.
-Drupal.yui.uploader = function(selector, settings) {
+Drupal.yui.uploader = function(selector, settings, id) {
   YUI().use('uploader-flash', function (Y) {
     if(Y.Uploader.TYPE == 'none' || Y.UA.ios) {
       Y.one(selector).set('text', Drupal.t('We are sorry, but the uploader technology is not supported on this platform.'));
@@ -24,6 +24,9 @@ Drupal.yui.uploader = function(selector, settings) {
         if(uploaded == false || uploading == true) {
           e.preventDefault();
           alert(Drupal.t('You must upload one or files, before you can submit the form.')); // Alerts aren't pretty perhaps we could do something else?
+        }
+        else {
+          delete Drupal.settings.yui.uploader[id]; // Submit and forget this existed.
         }
       });
     }
