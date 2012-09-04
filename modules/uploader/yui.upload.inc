@@ -70,7 +70,5 @@ function yui_uploader_restore_session() {
   $id = $_POST['SID'];
   $_COOKIE[$name] = $id; // Used by Drupal session handlers.
   session_destroy(); // Forget the session of the anonymous user incorrectly created because of the missing cookies.
-  session_id($id);
-  session_name($name);
   session_start(); // Restart the session with the correct information.
 }
