@@ -4,14 +4,14 @@ Drupal.behaviors.yuiUploader = function(context) {
     if (!$(id_selector + '.yui-processed').size()) {
       var settings = Drupal.settings.yui.uploader[id];
       $(id_selector).each(function() {
-        new Drupal.yui.uploader(id_selector, settings);
+        var uploader = new Drupal.yui.uploader(id_selector, settings, id);
       });
       $(id_selector).addClass('yui-processed');
     }
   }
 };
 Drupal.yui = Drupal.yui || {}; // If not defined create the yui namespace.
-Drupal.yui.uploader = function(selector, settings) {
+Drupal.yui.uploader = function(selector, settings, id) {
   YUI().use('uploader-flash', function (Y) {
     if(Y.Uploader.TYPE == 'none' || Y.UA.ios) {
       Y.one(selector).set('text', Drupal.t('We are sorry, but the uploader technology is not supported on this platform.'));
@@ -25,13 +25,16 @@ Drupal.yui.uploader = function(selector, settings) {
           e.preventDefault();
           alert(Drupal.t('You must upload one or files, before you can submit the form.')); // Alerts aren't pretty perhaps we could do something else?
         }
+        else {
+          delete Drupal.settings.yui.uploader[id]; // Submit and forget this existed.
+        }
       });
     }
     var files = Y.one(selector + ' .yui-uploader-files');
     var files_table = Y.one(selector + ' .yui-uploader-files .yui-uploader-filenames tbody');
     var files_progress = Y.one(selector + ' .yui-uploader-overall-progress');
     if(settings.files.length > 0) {
-      uploaded = true;
+      settings.submittable = uploaded = true;
       files.setStyle('display', 'block');
       Y.each(settings.files, function (file) {
         files_table.append('<tr>' +
@@ -52,6 +55,7 @@ Drupal.yui.uploader = function(selector, settings) {
       if (file_list.length > 0) {
         files.setStyle('display', 'block');
         uploading = true;
+        settings.submittable = false;
         uploader.uploadThese(file_list);
       }
     });
@@ -71,7 +75,7 @@ Drupal.yui.uploader = function(selector, settings) {
     });
     uploader.on('alluploadscomplete', function (event) {
       uploader.set('enabled', true);
-      uploaded = true;
+      settings.submittable = uploaded = true;
       uploading = false;
       files_progress.set('text', Drupal.t('Upload complete!'));
     });
