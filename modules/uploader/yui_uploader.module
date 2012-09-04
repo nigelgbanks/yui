@@ -118,6 +118,7 @@ function yui_uploader_pre_render(array $element) {
             'simLimit' => 1,
             'postVarsPerFile' => array(
               'SID' => session_id(),
+              'SNAME' => session_name(),
               'form_build_id' => $element['#form_build_id'],
               'form_id' => $element['#form_id'],
               'form_token' => $element['#form_token']
