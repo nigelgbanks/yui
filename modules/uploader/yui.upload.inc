@@ -66,9 +66,11 @@ function yui_uploader_store_uploaded_file($form_build_id, stdClass $file) {
  * Because of limitiations on flash we have to restore the session from a POST
  */
 function yui_uploader_restore_session() {
-  $name = $_POST['SNAME'];
-  $id = $_POST['SID'];
-  $_COOKIE[$name] = $id; // Used by Drupal session handlers.
-  session_destroy(); // Forget the session of the anonymous user incorrectly created because of the missing cookies.
-  session_start(); // Restart the session with the correct information.
+  if(user_is_anonymous()) {
+    $name = $_POST['SNAME'];
+    $id = $_POST['SID'];
+    $_COOKIE[$name] = $id; // Used by Drupal session handlers.
+    session_destroy(); // Forget the session of the anonymous user incorrectly created because of the missing cookies.
+    session_start(); // Restart the session with the correct information.
+  }
 }
