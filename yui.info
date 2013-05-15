@@ -1,4 +1,4 @@
 name = YUI Library
 description = Provides the Yahoo YUI plug-in to other Drupal modules.
 package = User interface
-core = 6.x
+core = 7.x

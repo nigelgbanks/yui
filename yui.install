@@ -2,18 +2,18 @@
 
 /**
  * @file
- *
  * The install hooks for this module.
  */
 
 /**
- * Implementation of hook_requirements().
+ * Implements hook_requirements().
  */
 function yui_requirements($phase) {
-  include_once dirname(__FILE__) . '/yui.utils.inc'; // module_load_include() isn't avaliable during the 'install' $phase
+  // module_load_include() isn't avaliable during the 'install' $phase.
+  require_once dirname(__FILE__) . '/includes/utilities.inc';
   $t = get_t();
   $requirements = array(
-    'yui' => array('title' => $t('Yahoo YUI Library'))
+    'yui' => array('title' => $t('Yahoo YUI Library')),
   );
   if ($version = yui_get_version()) {
     $requirements['yui']['severity'] = REQUIREMENT_OK;
@@ -33,24 +33,24 @@ function yui_requirements($phase) {
 }
 
 /**
- * Implementation of hook_install().
+ * Implements hook_install().
  */
 function yui_install() {
   // Set the module's weight high so that it runs after other modules.
   db_query("UPDATE {system} SET weight = 99 WHERE name = 'yui' and type = 'module'");
-  $path = file_directory_path() . '/yui';
-  file_check_directory($path, FILE_CREATE_DIRECTORY);
+  $path = variable_get('file_' . file_default_scheme() . '_path', conf_path() . '/files') . '/yui';
+  file_prepare_directory($path, FILE_CREATE_DIRECTORY);
 }
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  */
 function yui_uninstall() {
-  $path = file_directory_path() . '/yui';
-  if (file_check_directory($path)) {
-    $files = file_scan_directory($path, '.*');
+  $path = variable_get('file_' . file_default_scheme() . '_path', conf_path() . '/files') . '/yui';
+  if (file_prepare_directory($path)) {
+    $files = file_scan_directory($path, '/.*/');
     foreach ($files as $file) {
-      unlink($file->filename);
+      drupal_unlink($file->filename);
     }
     rmdir($path);
   }

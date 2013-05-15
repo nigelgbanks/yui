@@ -2,21 +2,20 @@
 
 /**
  * @file
- *
  * The install hooks for this module.
  */
 
 /**
- * Implementation of hook_requirements().
+ * Implements hook_requirements().
  */
 function yui_uploader_requirements($phase) {
-  module_load_include('inc', 'yui', 'yui.utils');
-  if($phase != 'install') {
+  module_load_include('inc', 'yui', 'includes/utilities');
+  if ($phase != 'install') {
     return;
   }
   $t = get_t();
   $requirements = array(
-    'yui_uploader' => array('title' => $t('Yahoo YUI Library'))
+    'yui_uploader' => array('title' => $t('Yahoo YUI Library')),
   );
   $version = yui_get_version();
   if (version_compare($version, '3.5.0') >= 0) {
@@ -37,22 +36,22 @@ function yui_uploader_requirements($phase) {
 }
 
 /**
- * Implementation of hook_install().
+ * Implements hook_install().
  */
 function yui_uploader_install() {
-  $path = file_directory_path() . '/yui/uploader';
-  file_check_directory($path, FILE_CREATE_DIRECTORY);
+  $path = variable_get('file_' . file_default_scheme() . '_path', conf_path() . '/files') . '/yui/uploader';
+  file_prepare_directory($path, FILE_CREATE_DIRECTORY);
 }
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  */
 function yui_uploader_uninstall() {
-  $path = file_directory_path() . '/yui/uploader';
-  if (file_check_directory($path)) {
-    $files = file_scan_directory($path, '.*');
+  $path = variable_get('file_' . file_default_scheme() . '_path', conf_path() . '/files') . '/yui/uploader';
+  if (file_prepare_directory($path)) {
+    $files = file_scan_directory($path, '/.*/');
     foreach ($files as $file) {
-      unlink($file->filename);
+      drupal_unlink($file->filename);
     }
     rmdir($path);
   }

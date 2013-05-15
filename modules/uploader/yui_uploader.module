@@ -2,9 +2,9 @@
 
 /**
  * @file
- *
  * A Drupal wrapper for the Yahoo YUI Uploader Widget
  */
+
 define('THEME_YUI_UPLOADER', 'yui_uploader');
 define('MENU_YUI_UPLOADER', 'yui/uploader');
 
@@ -12,14 +12,14 @@ define('MENU_YUI_UPLOADER', 'yui/uploader');
  * Implements hook_menu().
  */
 function yui_uploader_menu() {
-  return  array(
+  return array(
     MENU_YUI_UPLOADER => array(
-      'file' => 'yui.upload.inc',
+      'file' => 'includes/upload.inc',
       'page callback' => 'yui_uploader_upload_file',
       'page arguments' => array(2),
       'access arguments' => array('access content'),
       'type' => MENU_CALLBACK,
-    )
+    ),
   );
 }
 
@@ -36,27 +36,27 @@ function yui_uploader_elements() {
       '#height' => '40px',
       '#extensions' => array('*'),
       '#multiple_files' => TRUE,
-    )
+    ),
   );
 }
 
 /**
- * Implementation of hook_theme().
+ * Implements hook_theme().
  */
 function yui_uploader_theme() {
   return array(
     THEME_YUI_UPLOADER => array(
-      'arguments' => array('element' => NULL)
-    )
+      'arguments' => array('element' => NULL),
+    ),
   );
 }
 
 /**
- * Implementation of theme_hook().
+ * Implements theme_hook().
  */
 function theme_yui_uploader(array $element) {
   _form_set_class($element, array(
-    'yui-uploader'
+      'yui-uploader',
   ));
   $id = $element['#id'];
   $attributes = drupal_attributes($element['#attributes']);
@@ -95,7 +95,7 @@ function yui_uploader_process(array $element, $edit, array &$form_state, array $
  */
 function yui_uploader_pre_render(array $element) {
   global $base_url;
-  module_load_include('inc', 'yui', 'yui.utils');
+  module_load_include('inc', 'yui', 'includes/utilities');
   $add_prefix = create_function('$a', 'return "*.$a";');
   $extensions = array_map($add_prefix, $element['#extensions']);
   $extensions = implode(';', $extensions);
@@ -106,7 +106,8 @@ function yui_uploader_pre_render(array $element) {
         "$id" => array(
           'id' => $id,
           'formID' => str_replace(array('][', '_', ' '), '-', $element['#form_id']),
-          'required' => $element['#upload_required'], // Prevent form submission until one or more files have been uploaded.
+          // Prevent form submission until one or more files have been uploaded.
+          'required' => $element['#upload_required'],
           'submittable' => $element['#upload_required'] ? FALSE : TRUE,
           'files' => $element['#files'],
           'config' => array(
@@ -115,7 +116,7 @@ function yui_uploader_pre_render(array $element) {
             'height' => $element['#height'],
             'fileFilters' => array(array('description' => 'Files', 'extensions' => $extensions)),
             'multipleFiles' => $element['#multiple_files'],
-            'swfURL' =>  $base_url . '/' . yui_get_assets_file_path('uploader') . '/flashuploader.swf?t=' .rand(),
+            'swfURL' => $base_url . '/' . yui_get_assets_file_path('uploader') . '/flashuploader.swf?t=' . rand(),
             'uploadURL' => url(MENU_YUI_UPLOADER),
             'simLimit' => 1,
             'postVarsPerFile' => array(
@@ -123,12 +124,12 @@ function yui_uploader_pre_render(array $element) {
               'SNAME' => session_name(),
               'form_build_id' => $element['#form_build_id'],
               'form_id' => $element['#form_id'],
-              'form_token' => $element['#form_token']
-            )
-          )
-        )
-      )
-    )
+              'form_token' => $element['#form_token'],
+            ),
+          ),
+        ),
+      ),
+    ),
   );
   yui_add_seed();
   drupal_add_js($data, 'setting');
@@ -141,7 +142,7 @@ function yui_uploader_pre_render(array $element) {
  * Returns an array of the uploaded files as Drupal file objects.
  */
 function yui_uploader_get_uploaded_files(array &$form_state) {
-  if(isset($form_state['storage']['yui_uploader'])) {
+  if (isset($form_state['storage']['yui_uploader'])) {
     return $form_state['storage']['yui_uploader'];
   }
   return array();

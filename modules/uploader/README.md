@@ -1,9 +1,26 @@
-Only one Uploader allowed on screen at a time. Requires YUI 3.5 or greater.
+CONTENTS OF THIS FILE
+---------------------
 
-TODO: Add form hook that will populate the $_FILES variable on submit. Could use an element validator hook...
+ * summary
+ * requirements
+ * installation
+ * configuration
+ * todo
+
+SUMMARY
+-------
+
+YUI
+
+A Drupal module wrapper for the Yahoo YUI multi-file uploader.
+Requires YUI 3.5 or greater.
+
+Only one Uploader allowed on screen at a time for now.
+
 
 Use like a regular file upload below is an example with defaults.
 
+```PHP
 $form['upload'] = array(
   'upload' => array(
       '#type' => 'yui_uploader',
@@ -14,6 +31,38 @@ $form['upload'] = array(
       '#multiple_files' => TRUE, // Allow multiple files to selected at once
   ),
 );
+```
 
-When handling the submission of the form you can get the files uploaded with this function yui_uploader_get_uploaded_files(array &$form_state);
-It returns an array of drupal file objects, or an empty array if no files have been uploaded
+When handling the submission of the form you can get the files uploaded with:
+
+```PHP
+function yui_uploader_get_uploaded_files(array &$form_state);
+```
+
+It returns an array of drupal file objects, or an empty array if no files have
+been uploaded.
+
+REQUIREMENTS
+------------
+
+* Drupal yui module.
+* YUI versions 3.5 and up.
+
+INSTALLATION
+------------
+
+YUI:
+
+Go to http://yuilibrary.com/ and download a version of YUI that is at equal to
+or above 3.5.
+
+Note: This module has only been tested with version 3.5.1, which can be found
+here http://yui.zenfs.com/releases/yui3/yui_3.5.1.zip
+
+Unzip the downloaded file in sites/all/libraries.
+
+TODO
+------------
+
+* Add form hook that will populate the $_FILES variable on submit. Could use an
+  element validator hook?
