@@ -31,7 +31,7 @@ function yui_uploader_elements() {
     'yui_uploader' => array(
       '#input' => TRUE,
       '#pre_render' => array('yui_uploader_pre_render'),
-      '#process' => array('yui_uploader_process'),
+      '#process' => array('form_yui_uploader_process'),
       '#width' => '100px',
       '#height' => '40px',
       '#extensions' => array('*'),
@@ -46,7 +46,7 @@ function yui_uploader_elements() {
 function yui_uploader_theme() {
   return array(
     THEME_YUI_UPLOADER => array(
-      'arguments' => array('element' => NULL),
+      'render element' => 'element',
     ),
   );
 }
@@ -78,7 +78,7 @@ EOT;
 /**
  * Implements hook_process().
  */
-function yui_uploader_process(array $element, $edit, array &$form_state, array $complete_form = NULL) {
+function form_yui_uploader_process(array $element, array &$form_state, array $complete_form = NULL) {
   $element['#form_id'] = $complete_form['form_id']['#value'];
   $element['#form_build_id'] = $complete_form['form_build_id']['#value'];
   $element['#form_token'] = $complete_form['form_token']['#default_value'];
