@@ -3,15 +3,17 @@
  * Attaches YUI uploader behaviour to any elements given in the settings.
  */
 (function ($) {
-  Drupal.behaviors.yuiUploader = function(context) {
-    for (var id in Drupal.settings.yui.uploader) {
-      var id_selector = '#' + id;
-      if (!$(id_selector + '.yui-processed').size()) {
-        var settings = Drupal.settings.yui.uploader[id];
-        $(id_selector).each(function() {
-          var uploader = new Drupal.yui.uploader(id_selector, settings, id);
-        });
-        $(id_selector).addClass('yui-processed');
+  Drupal.behaviors.yuiUploader = {
+    attach:  function(context) {
+      for (var id in Drupal.settings.yui.uploader) {
+        var id_selector = '#' + id;
+        if (!$(id_selector + '.yui-processed').size()) {
+          var settings = Drupal.settings.yui.uploader[id];
+          $(id_selector).each(function() {
+            var uploader = new Drupal.yui.uploader(id_selector, settings, id);
+          });
+          $(id_selector).addClass('yui-processed');
+        }
       }
     }
   };

@@ -29,7 +29,7 @@ function yui_uploader_upload_file() {
  */
 function yui_uploader_save_uploaded_file($form_build_id, array $data) {
   global $user;
-  $directory = file_directory_path() . '/yui/uploader';
+  $directory = variable_get('file_' . file_default_scheme() . '_path', conf_path() . '/files') . '/yui/uploader';
   $basename = $form_build_id . '_' . $data['name'];
   $dest = file_create_filename($basename, $directory);
   if (move_uploaded_file($data['tmp_name'], $dest) !== FALSE) {

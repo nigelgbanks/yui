@@ -5,15 +5,12 @@
  * A Drupal wrapper for the Yahoo YUI Uploader Widget
  */
 
-define('THEME_YUI_UPLOADER', 'yui_uploader');
-define('MENU_YUI_UPLOADER', 'yui/uploader');
-
 /**
  * Implements hook_menu().
  */
 function yui_uploader_menu() {
   return array(
-    MENU_YUI_UPLOADER => array(
+    'yui/uploader' => array(
       'file' => 'includes/upload.inc',
       'page callback' => 'yui_uploader_upload_file',
       'page arguments' => array(2),
@@ -24,18 +21,20 @@ function yui_uploader_menu() {
 }
 
 /**
- * Implements hook_elements().
+ * Implements hook_element_info().
  */
-function yui_uploader_elements() {
+function yui_uploader_element_info() {
   return array(
     'yui_uploader' => array(
       '#input' => TRUE,
-      '#pre_render' => array('yui_uploader_pre_render'),
-      '#process' => array('form_yui_uploader_process'),
+      '#pre_render' => array('yui_uploader_form_element_pre_render'),
+      '#process' => array('yui_uploader_form_element_process'),
       '#width' => '100px',
       '#height' => '40px',
       '#extensions' => array('*'),
       '#multiple_files' => TRUE,
+      '#theme' => 'yui_uploader',
+      '#theme_wrappers' => array('form_element'),
     ),
   );
 }
@@ -45,40 +44,18 @@ function yui_uploader_elements() {
  */
 function yui_uploader_theme() {
   return array(
-    THEME_YUI_UPLOADER => array(
+    'yui_uploader' => array(
       'render element' => 'element',
+      'template' => 'theme/yui-uploader',
+      'file' => 'theme/theme.inc',
     ),
   );
 }
 
 /**
- * Implements theme_hook().
- */
-function theme_yui_uploader(array $element) {
-  _form_set_class($element, array(
-      'yui-uploader',
-  ));
-  $id = $element['#id'];
-  $attributes = drupal_attributes($element['#attributes']);
-  $markup = <<<EOT
-<div id='$id' {$attributes}>
-  <div class="yui-uploader"></div>
-  <div class="yui-uploader-overall-progress"></div>
-  <br/>
-  <div class='yui-uploader-files' style='display:none'>
-    <table class='yui-uploader-filenames' style='border-width:1px; border-style:solid; padding:5px;'>
-      <thead><tr><th>Filename</th><th>File size</th><th>Percent uploaded</th></tr></thead><tbody></tbody>
-    </table>
-  </div>
-</div>
-EOT;
-  return theme('form_element', $element, $markup);
-}
-
-/**
  * Implements hook_process().
  */
-function form_yui_uploader_process(array $element, array &$form_state, array $complete_form = NULL) {
+function yui_uploader_form_element_process(array $element, array &$form_state, array $complete_form = NULL) {
   $element['#form_id'] = $complete_form['form_id']['#value'];
   $element['#form_build_id'] = $complete_form['form_build_id']['#value'];
   $element['#form_token'] = $complete_form['form_token']['#default_value'];
@@ -93,7 +70,7 @@ function form_yui_uploader_process(array $element, array &$form_state, array $co
 /**
  * Implements hook_pre_render().
  */
-function yui_uploader_pre_render(array $element) {
+function yui_uploader_form_element_pre_render(array $element) {
   global $base_url;
   module_load_include('inc', 'yui', 'includes/utilities');
   $add_prefix = create_function('$a', 'return "*.$a";');
@@ -117,7 +94,7 @@ function yui_uploader_pre_render(array $element) {
             'fileFilters' => array(array('description' => 'Files', 'extensions' => $extensions)),
             'multipleFiles' => $element['#multiple_files'],
             'swfURL' => $base_url . '/' . yui_get_assets_file_path('uploader') . '/flashuploader.swf?t=' . rand(),
-            'uploadURL' => url(MENU_YUI_UPLOADER),
+            'uploadURL' => url('yui/uploader'),
             'simLimit' => 1,
             'postVarsPerFile' => array(
               'SID' => session_id(),
