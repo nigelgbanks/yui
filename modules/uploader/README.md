@@ -46,6 +46,7 @@ REQUIREMENTS
 
 * Drupal yui module.
 * YUI versions 3.5 and up.
+* PHP 5.3+
 
 INSTALLATION
 ------------
