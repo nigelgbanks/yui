@@ -11,40 +11,19 @@
 function yui_uploader_upload_file() {
   yui_uploader_restore_session();
   $form_build_id = $_POST['form_build_id'];
-  foreach ($_FILES as $data) {
-    if ($data['error'] == 0) {
-      $file = yui_uploader_save_uploaded_file($form_build_id, $data);
-      if ($file !== FALSE) {
-        yui_uploader_store_uploaded_file($form_build_id, $file);
-      }
-    }
-    // @todo log/display error to the user.
+  // Convert $_FILES array to Drupal friendly version.
+  $yui_uploader = array();
+  foreach ($_FILES['files'] as $key => $value) {
+    $_FILES['files'][$key] = array('yui_uploader' => $value);
+  }
+  $file = file_save_upload('yui_uploader',
+          array('file_validate_extensions' => array()),
+          'public://');
+  if (is_object($file)) {
+    yui_uploader_store_uploaded_file($form_build_id, $file);
   }
   echo ' ';
   exit();
-}
-
-/**
- * Saves the given file to the yui/uploader folder.
- */
-function yui_uploader_save_uploaded_file($form_build_id, array $data) {
-  global $user;
-  $directory = variable_get('file_' . file_default_scheme() . '_path', conf_path() . '/files') . '/yui/uploader';
-  $basename = $form_build_id . '_' . $data['name'];
-  $dest = file_create_filename($basename, $directory);
-  if (move_uploaded_file($data['tmp_name'], $dest) !== FALSE) {
-    $file = new stdClass();
-    $file->uid = $user->uid;
-    $file->filename = $data['name'];
-    $file->filepath = $dest;
-    $file->filemime = file_get_mimetype($data['name']);
-    $file->filesize = $data['size'];
-    $file->status = 0;
-    $file->timestamp = REQUEST_TIME;
-    drupal_write_record('files', $file);
-    return $file;
-  }
-  return FALSE;
 }
 
 /**
@@ -52,6 +31,8 @@ function yui_uploader_save_uploaded_file($form_build_id, array $data) {
  */
 function yui_uploader_store_uploaded_file($form_build_id, stdClass $file) {
   $form_state = array('storage' => NULL, 'submitted' => FALSE, 'post' => $_POST);
+  // Keep trying, either the request will time out or we will succeed.
+  retry:
   if (lock_acquire('yui_upload_file')) {
     $form = form_get_cache($form_build_id, $form_state);
     if (isset($form)) {
@@ -59,6 +40,10 @@ function yui_uploader_store_uploaded_file($form_build_id, stdClass $file) {
       form_set_cache($form_build_id, $form, $form_state);
     }
     lock_release('yui_upload_file');
+  }
+  else {
+    lock_wait('yui_upload_file', 1);
+    goto retry;
   }
 }
 

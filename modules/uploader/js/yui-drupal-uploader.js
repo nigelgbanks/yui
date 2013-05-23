@@ -27,7 +27,7 @@
       var uploader = new Y.UploaderFlash(settings.config);
       var uploaded = false, uploading = false;
       if(settings.required) { // Upload is required.
-        $('#' + settings.formID).submit(function(e) { // Prevent form submission untill a file has been uploaded
+        $('#' + settings.formID).submit(function(e) { // Prevent form submission until a file has been uploaded
           if(uploaded == false || uploading == true) {
             e.preventDefault();
             alert(Drupal.t('You must upload one or files, before you can submit the form.')); // Alerts aren't pretty perhaps we could do something else?

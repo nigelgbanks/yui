@@ -95,7 +95,8 @@ function yui_uploader_form_element_pre_render(array $element) {
             'multipleFiles' => $element['#multiple_files'],
             'swfURL' => $base_url . '/' . yui_get_assets_file_path('uploader') . '/flashuploader.swf?t=' . rand(),
             'uploadURL' => url('yui/uploader'),
-            'simLimit' => 1,
+            'simLimit' => 5,
+            'fileFieldName' => 'files',
             'postVarsPerFile' => array(
               'SID' => session_id(),
               'SNAME' => session_name(),

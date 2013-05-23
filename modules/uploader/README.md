@@ -15,8 +15,7 @@ YUI
 A Drupal module wrapper for the Yahoo YUI multi-file uploader.
 Requires YUI 3.5 or greater.
 
-Only one Uploader allowed on screen at a time for now.
-
+Only one Uploader allowed per form for now (Uses $form_state['storage']).
 
 Use like a regular file upload below is an example with defaults.
 

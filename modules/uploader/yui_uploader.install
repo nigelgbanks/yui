@@ -34,25 +34,3 @@ function yui_uploader_requirements($phase) {
   }
   return $requirements;
 }
-
-/**
- * Implements hook_install().
- */
-function yui_uploader_install() {
-  $path = variable_get('file_' . file_default_scheme() . '_path', conf_path() . '/files') . '/yui/uploader';
-  file_prepare_directory($path, FILE_CREATE_DIRECTORY);
-}
-
-/**
- * Implements hook_uninstall().
- */
-function yui_uploader_uninstall() {
-  $path = variable_get('file_' . file_default_scheme() . '_path', conf_path() . '/files') . '/yui/uploader';
-  if (file_prepare_directory($path)) {
-    $files = file_scan_directory($path, '/.*/');
-    foreach ($files as $file) {
-      drupal_unlink($file->filename);
-    }
-    rmdir($path);
-  }
-}
