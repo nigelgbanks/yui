@@ -74,8 +74,8 @@ function yui_uploader_form_element_pre_render(array $element) {
   global $base_url;
   module_load_include('inc', 'yui', 'includes/utilities');
   $add_prefix = create_function('$a', 'return "*.$a";');
-  $extensions = array_map($add_prefix, $element['#extensions']);
-  $extensions = implode(';', $extensions);
+  $file_filters_extensions = array_map($add_prefix, $element['#extensions']);
+  $file_filters_extensions = implode(';', $file_filters_extensions);
   $id = $element['#id'];
   $data = array(
     'yui' => array(
@@ -87,15 +87,22 @@ function yui_uploader_form_element_pre_render(array $element) {
           'required' => $element['#upload_required'],
           'submittable' => $element['#upload_required'] ? FALSE : TRUE,
           'files' => $element['#files'],
+          'extensions' => $element['#extensions'],
           'config' => array(
             'selectButtonLabel' => t('Upload Files'),
             'width' => $element['#width'],
             'height' => $element['#height'],
-            'fileFilters' => array(array('description' => 'Files', 'extensions' => $extensions)),
+            'fileFilters' => array(
+              array(
+                'description' => 'Files',
+                'extensions' => $file_filters_extensions,
+              ),
+            ),
             'multipleFiles' => $element['#multiple_files'],
             'swfURL' => $base_url . '/' . yui_get_assets_file_path('uploader') . '/flashuploader.swf?t=' . rand(),
             'uploadURL' => url('yui/uploader'),
             'simLimit' => 5,
+            'dragAndDropArea' => "#{$id}",
             'fileFieldName' => 'files',
             'postVarsPerFile' => array(
               'SID' => session_id(),

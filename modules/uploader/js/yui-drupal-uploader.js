@@ -19,12 +19,12 @@
   };
   Drupal.yui = Drupal.yui || {}; // If not defined create the yui namespace.
   Drupal.yui.uploader = function(selector, settings, id) {
-    YUI().use('uploader-flash', function (Y) {
+    YUI().use(['uploader', 'array-extras'], function (Y) {
       if(Y.Uploader.TYPE == 'none' || Y.UA.ios) {
         Y.one(selector).set('text', Drupal.t('We are sorry, but the uploader technology is not supported on this platform.'));
         return;
       }
-      var uploader = new Y.UploaderFlash(settings.config);
+      var uploader = new Y.Uploader(settings.config);
       var uploaded = false, uploading = false;
       if(settings.required) { // Upload is required.
         $('#' + settings.formID).submit(function(e) { // Prevent form submission until a file has been uploaded
@@ -40,6 +40,9 @@
       var files = Y.one(selector + ' .yui-uploader-files');
       var files_table = Y.one(selector + ' .yui-uploader-files .yui-uploader-filenames tbody');
       var files_progress = Y.one(selector + ' .yui-uploader-overall-progress');
+      // HTML5 doesn't support file filters, so we enfore our own.
+      var valid_extensions = settings.extensions;
+      var check_extensions = $.inArray('*', valid_extensions) == -1;
       if(settings.files.length > 0) {
         settings.submittable = uploaded = true;
         files.setStyle('display', 'block');
@@ -53,14 +56,25 @@
       uploader.render(selector + ' .yui-uploader');
       uploader.after('fileselect', function (event) {
         var file_list = event.fileList;
-        Y.each(file_list, function (file_instance) {
-          files_table.append('<tr id="' + file_instance.get('id') + '_row' + '">' +
-                             '<td class="filename">' + file_instance.get('name') + '</td>' +
-                             '<td class="filesize">' + file_instance.get('size') + '</td>' +
-                             '<td class="percentdone">' + Drupal.t('Hasn\'t started yet') + '</td></tr>');
-        });
-        if (file_list.length > 0) {
+        Y.each(file_list, function (file, key) {
+          var id = file.get('id');
+          var name = file.get('name');
+          var size = file.get('size');
+          var percent = Drupal.t('Hasn\'t started yet');
+          var extension = name.split('.').pop();
+          var invalid_extension = $.inArray(extension, valid_extensions) == -1;
+          if(check_extensions && invalid_extension) {
+            percent = Drupal.t('Invalid Extension!');
+            delete file_list[key];
+          }
+          files_table.append('<tr id="' + id + '_row' + '">' +
+                             '<td class="filename">' + name + '</td>' +
+                             '<td class="filesize">' + size + '</td>' +
+                             '<td class="percentdone">' + percent + '</td></tr>');
           files.setStyle('display', 'block');
+        });
+        file_list = Y.Array.filter(file_list, function(file) { return file; });
+        if (file_list.length > 0) {
           uploading = true;
           settings.submittable = false;
           uploader.uploadThese(file_list);

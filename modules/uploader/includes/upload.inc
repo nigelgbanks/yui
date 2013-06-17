@@ -32,7 +32,7 @@ function yui_uploader_upload_file() {
 function yui_uploader_store_uploaded_file($form_build_id, stdClass $file) {
   $form_state = array('storage' => NULL, 'submitted' => FALSE, 'post' => $_POST);
   // Keep trying, either the request will time out or we will succeed.
-  retry:
+  RETRY:
   if (lock_acquire('yui_upload_file')) {
     $form = form_get_cache($form_build_id, $form_state);
     if (isset($form)) {
@@ -43,7 +43,7 @@ function yui_uploader_store_uploaded_file($form_build_id, stdClass $file) {
   }
   else {
     lock_wait('yui_upload_file', 1);
-    goto retry;
+    goto RETRY;
   }
 }
 
