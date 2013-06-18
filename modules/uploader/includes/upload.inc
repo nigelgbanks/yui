@@ -30,13 +30,13 @@ function yui_uploader_upload_file() {
  * Stores the uploaded file in the form_state.
  */
 function yui_uploader_store_uploaded_file($form_build_id, stdClass $file) {
-  $form_state = array('storage' => NULL, 'submitted' => FALSE, 'post' => $_POST);
+  $form_state = array('submitted' => FALSE, 'post' => $_POST);
   // Keep trying, either the request will time out or we will succeed.
   RETRY:
   if (lock_acquire('yui_upload_file')) {
     $form = form_get_cache($form_build_id, $form_state);
     if (isset($form)) {
-      $form_state['storage']['yui_uploader'][] = $file;
+      $form_state['yui_uploader'][] = $file;
       form_set_cache($form_build_id, $form, $form_state);
     }
     lock_release('yui_upload_file');
