@@ -56,14 +56,14 @@ function yui_uploader_theme() {
  * Implements hook_process().
  */
 function yui_uploader_form_element_process(array $element, array &$form_state, array $complete_form = NULL) {
+  $form_state['cache'] = TRUE;
   $element['#form_id'] = $complete_form['form_id']['#value'];
   $element['#form_build_id'] = $complete_form['form_build_id']['#value'];
   $element['#form_token'] = $complete_form['form_token']['#default_value'];
   $element['#upload_required'] = $element['#required'];
   $element['#required'] = FALSE;
-  $element['#cache'] = TRUE;
   $element['#files'] = yui_uploader_get_uploaded_files($form_state);
-  $form_state['storage']['yui_uploader'] = isset($form_state['storage']['yui_uploader']) ? $form_state['storage']['yui_uploader'] : array();
+  $form_state['yui_uploader'] = isset($form_state['yui_uploader']) ? $form_state['yui_uploader'] : array();
   return $element;
 }
 
@@ -127,8 +127,8 @@ function yui_uploader_form_element_pre_render(array $element) {
  * Returns an array of the uploaded files as Drupal file objects.
  */
 function yui_uploader_get_uploaded_files(array &$form_state) {
-  if (isset($form_state['storage']['yui_uploader'])) {
-    return $form_state['storage']['yui_uploader'];
+  if (isset($form_state['yui_uploader'])) {
+    return $form_state['yui_uploader'];
   }
   return array();
 }
